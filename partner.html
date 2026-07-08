@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>伴侣依恋风格评测</title>
+  <meta name="description" content="根据日常相处观察，为恋爱或约会对象评估依恋风格。">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --surface-2: #eef4f4;
+      --text: #1f2933;
+      --muted: #60707d;
+      --line: #d9e1e7;
+      --avoidant: #34699a;
+      --secure: #2f7d67;
+      --anxious: #b95454;
+      --accent: #234f5f;
+      --focus: #d79645;
+      --shadow: 0 18px 45px rgba(30, 46, 58, 0.08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(238, 244, 244, 0.85), rgba(246, 248, 251, 0.4) 330px),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+      padding: 22px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 3rem;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .intro {
+      max-width: 800px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .counter {
+      min-width: 170px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .counter strong {
+      display: block;
+      font-size: 1.55rem;
+      line-height: 1.15;
+      color: var(--accent);
+    }
+
+    .counter span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .notice {
+      margin: 22px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--focus);
+      background: #fffaf2;
+      color: #5b4a33;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .section {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: 0 8px 24px rgba(30, 46, 58, 0.05);
+    }
+
+    .section-head {
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+
+    .section-head h2 {
+      margin: 0 0 6px;
+      font-size: 1.3rem;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    fieldset {
+      margin: 0;
+      padding: 18px;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    fieldset:last-child {
+      border-bottom: 0;
+    }
+
+    fieldset.missing {
+      box-shadow: inset 4px 0 0 rgba(215, 150, 69, 0.9);
+      background: #fffaf2;
+    }
+
+    legend {
+      display: block;
+      width: 100%;
+      margin: 0 0 12px;
+      padding: 0;
+      color: var(--text);
+      font-size: 1.02rem;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .examples {
+      margin: 0 0 14px;
+      padding-left: 24px;
+      color: var(--muted);
+    }
+
+    .examples li + li {
+      margin-top: 6px;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .option {
+      position: relative;
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      min-height: 48px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      background: #fbfcfd;
+      cursor: pointer;
+      transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+    }
+
+    .option:hover {
+      border-color: #9fb3bf;
+      background: #f4f8fa;
+    }
+
+    .option input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
+    .option span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      font-size: 0.95rem;
+    }
+
+    .option:has(input:checked) {
+      border-color: var(--accent);
+      background: #edf6f6;
+      transform: translateY(-1px);
+    }
+
+    .actions {
+      position: sticky;
+      bottom: 0;
+      z-index: 3;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+
+    button {
+      border: 0;
+      padding: 12px 18px;
+      background: var(--accent);
+      color: #ffffff;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--accent);
+    }
+
+    button:hover {
+      filter: brightness(1.05);
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid rgba(215, 150, 69, 0.55);
+      outline-offset: 2px;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    aside {
+      position: sticky;
+      top: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 16px 18px 0;
+      font-size: 1.2rem;
+      letter-spacing: 0;
+    }
+
+    .result-summary {
+      padding: 12px 18px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .result-title {
+      margin: 0 0 6px;
+      font-size: 1.45rem;
+      line-height: 1.25;
+      color: var(--accent);
+      font-weight: 850;
+    }
+
+    .result-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .score-list {
+      display: grid;
+      gap: 14px;
+      padding: 16px 18px 18px;
+    }
+
+    .score-row {
+      display: grid;
+      gap: 7px;
+    }
+
+    .score-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--text);
+      font-weight: 750;
+      font-size: 0.94rem;
+    }
+
+    .bar {
+      height: 10px;
+      overflow: hidden;
+      background: #edf1f4;
+    }
+
+    .bar span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 220ms ease;
+    }
+
+    .score-row[data-type="avoidant"] .bar span {
+      background: var(--avoidant);
+    }
+
+    .score-row[data-type="secure"] .bar span {
+      background: var(--secure);
+    }
+
+    .score-row[data-type="anxious"] .bar span {
+      background: var(--anxious);
+    }
+
+    .rule-list {
+      margin: 0;
+      padding: 0 18px 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      list-style: none;
+    }
+
+    .rule-list li + li {
+      margin-top: 8px;
+    }
+
+    footer {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 920px) {
+      header,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .counter,
+      aside {
+        position: static;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .page {
+        width: min(100% - 20px, 1120px);
+        padding-top: 10px;
+      }
+
+      h1 {
+        font-size: 2.1rem;
+      }
+
+      header {
+        padding-top: 14px;
+      }
+
+      .options {
+        grid-template-columns: 1fr;
+      }
+
+      fieldset {
+        padding: 15px;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <h1>伴侣依恋风格评测</h1>
+        <p class="intro">根据日常生活中的相处和对话，评估恋爱或约会对象在回避型、安全型、焦虑型三种依恋风格上的表现。想测自己，可以回到 <a href="index.html">依恋类型自测</a>。</p>
+      </div>
+      <div class="counter" aria-live="polite">
+        <strong id="answeredCount">0 / 33</strong>
+        <span>已完成</span>
+      </div>
+    </header>
+
+    <p class="notice">请按照你对对方的真实观察作答：1 = 非常不符合，2 = 大致符合，3 = 非常符合。每部分 11 题，总分越高，说明对方越符合该部分描述。</p>
+
+    <div class="layout">
+      <form id="quizForm" novalidate></form>
+
+      <aside aria-label="测试结果">
+        <section class="panel" id="resultPanel">
+          <h2>结果</h2>
+          <div class="result-summary">
+            <p class="result-title" id="resultTitle">尚未计算</p>
+            <p class="result-note" id="resultNote">完成全部题目后显示三部分得分和判断。</p>
+          </div>
+          <div class="score-list" id="scoreList"></div>
+        </section>
+        <section class="panel">
+          <h2>记分键</h2>
+          <ul class="rule-list">
+            <li>1-17 分：非常低，显然不属于这种依恋风格。</li>
+            <li>18-22 分：中等，有表现出这种依恋风格的倾向性。</li>
+            <li>23-33 分：很高，显然属于这种依恋风格。</li>
+            <li>焦虑型和回避型得分都高时，可能呈现焦虑-回避型依恋风格。</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+
+    <div class="actions">
+      <span class="status" id="formStatus">还有 33 题未完成。</span>
+      <div>
+        <button type="button" class="secondary" id="resetButton">重置</button>
+        <button type="button" id="calculateButton">计算结果</button>
+      </div>
+    </div>
+
+    <footer>
+      <p>本页根据用户提供的“使用问卷确定伴侣的依恋风格”表格整理。页面仅供自我观察和关系理解参考，不是心理诊断。</p>
+    </footer>
+  </main>
+
+  <script>
+    const SCORE_LABELS = [
+      { value: 1, label: "1. 非常不符合" },
+      { value: 2, label: "2. 大致符合" },
+      { value: 3, label: "3. 非常符合" }
+    ];
+
+    const SECTION_INFO = {
+      avoidant: {
+        key: "A",
+        title: "A 部分：回避型倾向",
+        shortTitle: "回避型",
+        description: "强调独立和距离，容易在亲密关系中退开、回避承诺或回避冲突。"
+      },
+      secure: {
+        key: "B",
+        title: "B 部分：安全型倾向",
+        shortTitle: "安全型",
+        description: "言行可靠，愿意沟通、协商、承诺，也能让亲密关系形成正向循环。"
+      },
+      anxious: {
+        key: "C",
+        title: "C 部分：焦虑型倾向",
+        shortTitle: "焦虑型",
+        description: "渴望亲密但容易不安，担心被拒绝、被抛弃，关系中可能高度敏感。"
+      }
+    };
+
+    const SECTIONS = [
+      {
+        id: "avoidant",
+        items: [
+          {
+            title: "发出模糊的信号。",
+            examples: [
+              "在表现得冷漠疏离的同时，又显得十分脆弱。",
+              "有时滔滔不绝，有时又一言不发。",
+              "有时候会说出“我们搬到一起住后……”这种亲密的话，但过后又表现得跟你毫无未来可言。"
+            ]
+          },
+          {
+            title: "十分重视自我独立，而不屑于依恋和“需要感”。",
+            examples: [
+              "“我需要更多的空间。”",
+              "“我现在工作很忙，根本没时间马上去考虑我们俩的事。”",
+              "“我永远不会跟一个难以独立自主的人在一起。”"
+            ]
+          },
+          {
+            title: "贬低你（或是前任），哪怕是在说笑。",
+            examples: [
+              "嫌弃你的认路能力太糟，或是说你又矮又胖很“可爱”。",
+              "在几次约会以后，对曾经心仪对象的外貌产生厌倦，从而结束了那段关系。",
+              "背叛过前任。"
+            ]
+          },
+          {
+            title: "在心理或身体上保持距离。",
+            examples: [
+              "有个交往了六年却没住在一起的前任。",
+              "再晚都要回自己家睡觉，即使住在一起，也想要分床睡或者分被子睡。",
+              "喜欢独自度假。",
+              "对你们的关系没有清晰的计划。下次什么时候见面，你们什么时候搬到一起住，都没有定数。",
+              "你们走在路上时，喜欢走在前面甩开你。"
+            ]
+          },
+          {
+            title: "十分强调关系中的划界。",
+            examples: [
+              "让你有这样一种感觉：“这是我的朋友（或家人），离他们远点儿！”",
+              "只想在你的住所约会，并不想带你回自己的住所。"
+            ]
+          },
+          {
+            title: "对于恋爱关系有着不切实际的浪漫构想。",
+            examples: [
+              "总想着有一天能遇见自己的完美伴侣。",
+              "将上一段关系理想化，但是对哪里出了问题导致关系结束却缄口不提。",
+              "“我真的不确定，还能不能对别人产生对前任那么深的感情了。”"
+            ]
+          },
+          {
+            title: "疑神疑鬼，总害怕被恋人利用了。",
+            examples: [
+              "总感觉约会对象是要“骗”自己结婚。",
+              "总怀疑恋人在自己身上有利可图。"
+            ]
+          },
+          {
+            title: "对于感情非常教条，有着不容你违抗和商榷的规则。",
+            examples: [
+              "对于“理想型恋人”有着某种执念：比如说特别好看、特别苗条，或者必须是金发肤白。",
+              "必须要和对方分开住，或者奉行不婚主义。",
+              "有一些一概而论的观点，比如“所有男人/女人都是这样或那样的”，或者“同居或者结婚以后，人都是会变的”。",
+              "不愿意屈就你的爱好，比如你主要通过电话联系别人，但是他因为不喜欢讲电话，就从来不愿打电话。"
+            ]
+          },
+          {
+            title: "在产生冲突时，要么逃避问题，要么一点就炸。",
+            examples: [
+              "“你懂什么，别说了我不想听了。”",
+              "带着怒气，起身就摔门走了。"
+            ]
+          },
+          {
+            title: "不会将自己的诉求说清楚，永远要你去猜他们的感受。",
+            examples: [
+              "跟你在一起很久了，却从没说过“我爱你”。",
+              "说自己要出国一年，却只字不提你们俩的感情怎么处置。"
+            ]
+          },
+          {
+            title: "很难谈及与你的感情问题。",
+            examples: [
+              "当你问及今后彼此的打算时，对方的反应让你很不舒服。",
+              "当你表达自己的不快时，对方仅仅会说句抱歉，就再无其他的解释。",
+              "对于某些话题，有着自己的禁忌。"
+            ]
+          }
+        ]
+      },
+      {
+        id: "secure",
+        items: [
+          {
+            title: "言行一致，值得信赖。",
+            examples: [
+              "一旦告诉你什么时候会打电话给你，就会准时打来。",
+              "会提前制定计划并且按计划履行。如果不能履约，也一定会提前告知，真诚道歉，并且制定替代性的方案。",
+              "不会随便爽约，即使不能履约，也会解释清楚。"
+            ]
+          },
+          {
+            title: "凡事和你商量，不会一意孤行。",
+            examples: [
+              "会和你商讨后做出计划，不会无视你的意见，自己武断地做出决断。",
+              "在制定计划的时候，将你的喜好考虑进去，而不是一味只想着自己。"
+            ]
+          },
+          {
+            title: "对于感情的态度比较随和。",
+            examples: [
+              "并不会对伴侣有什么特别的标准，比如特定的年龄或者外貌。",
+              "会接受恋爱后的不同生活方式，比如搬到一起住，或者共享银行账户。",
+              "不会有类似“所有的男人/女人都是这样或那样的”或者“人们在同居或结婚以后，都是会变的”这种一概而论的论断。"
+            ]
+          },
+          {
+            title: "会对感情问题进行充分交流。",
+            examples: [
+              "当你问出“你们的关系到哪一步了？”或者“如何打算彼此的未来？”这类问题时，不会感到很不自在，即使他的回答也许不合你的心意。",
+              "如果有什么令其困惑的，会及时告诉你，而不是表现得莫名其妙，让你去猜测。"
+            ]
+          },
+          {
+            title: "在争吵时，很积极地进行和解。",
+            examples: [
+              "很努力地探寻真正困扰你的原因，并且致力于解决这个问题。",
+              "在你有什么误解时，不会通过一味证明自己是对的来解决问题。"
+            ]
+          },
+          {
+            title: "不惧怕承诺和依恋。",
+            examples: [
+              "并不担心你的出现会冲击到他原本的自由和私人领域。",
+              "不担心伴侣是为了骗婚，或者觊觎他的钱财。"
+            ]
+          },
+          {
+            title: "不会觉得恋爱是个负担。",
+            examples: [
+              "不会一直说自己为这段感情做出了多少妥协和努力。",
+              "即使当下的处境并不理想（比如工作不顺、学习繁重），还是不介意开始一段恋情。"
+            ]
+          },
+          {
+            title: "亲密关系会带来良性循环，而不是物极必反。",
+            examples: [
+              "在深入而动情的交流之后，让你确信会一直陪伴你，而不会突然冷落你。",
+              "在发生性关系以后，告诉你对他自己有多么重要，而不仅仅是夸你床上功夫了得。"
+            ]
+          },
+          {
+            title: "会把你介绍给家人和朋友。",
+            examples: [
+              "想让你融入自己的朋友圏子。可能不会一开始就把你介绍给家人，但只要你提出来了，他也是十分乐意的。"
+            ]
+          },
+          {
+            title: "会很自然地与你分享自己的感受。",
+            examples: [
+              "及时表达出自己对你的看法。",
+              "不吝惜说出“我爱你”三个字。"
+            ]
+          },
+          {
+            title: "不把感情当儿戏。",
+            examples: [
+              "不会让你陷入猜忌，或是故意让你吃醋。",
+              "不会计较那些诸如“我已经打给你两次电话了，轮到你打给我了”或者“上次你等了我一整天，那这次我等你好了”之类的事情。"
+            ]
+          }
+        ]
+      },
+      {
+        id: "anxious",
+        items: [
+          {
+            title: "在恋爱中非常渴望亲密。",
+            examples: [
+              "在刚开始交往时，就答应一起旅行、住到一起，或是整天都形影不离，不过并不一定会直接提出来。",
+              "非常喜欢身体上的接触，比如牵手、爱抚和接吻。"
+            ]
+          },
+          {
+            title: "非常担心被拒绝和抛弃，表现出强烈的不安全感。",
+            examples: [
+              "会问你很多关于前任的问题，然后跟自己作比较。",
+              "不断地确定你是不是还想着前任。",
+              "努力地取悦你。",
+              "担心你对他失去兴趣，或者是性趣。"
+            ]
+          },
+          {
+            title: "非常不适应单身的生活。",
+            examples: [
+              "即使他不说，你也能感觉到他非常渴望找个人来恋爱。",
+              "有时候，跟他约会就像是一场“蓄谋已久的”相亲面谈。"
+            ]
+          },
+          {
+            title: "为了引起你的注意，会玩一些把戏。",
+            examples: [
+              "如果你几天没有跟他打电话，他就会故意疏远你或是冷落你。",
+              "假装自己日理万机，没空理你。",
+              "会想尽办法制造一些情境，以此来博得你的更多关注。"
+            ]
+          },
+          {
+            title: "很少去解释自己的困惑，总想要你猜他的想法。",
+            examples: [
+              "总想让你从一些微妙的暗示中，发现到他的不开心，如果不奏效的话，就会发火。"
+            ]
+          },
+          {
+            title: "常常发火，而不是跟你一起解决问题。",
+            examples: [
+              "吵架的时候，常常以分手相要挟，过一会儿就反悔了。",
+              "从来不明说自己的诉求，要等到积怨已久才会爆发出自己的伤心。"
+            ]
+          },
+          {
+            title: "在恋爱中，非常以自我为中心，过度解读一些小插曲。",
+            examples: [
+              "如果你要加班，不能陪他参加聚会，他就会觉得你“不想见他的朋友”。",
+              "如果你下班回家，太累了不想说话，他会觉得“你不再爱他了”。"
+            ]
+          },
+          {
+            title: "为了不让自己感觉受伤，在恋爱中总是对你有样学样。",
+            examples: [
+              "你打电话过去，他才会打给你；只有你先表白，他才会表达对你的感觉。总之不想冒任何风险。"
+            ]
+          },
+          {
+            title: "对感情投入过多精力。",
+            examples: [
+              "约会过后你回家睡觉了，他却要回家把所有的细节都跟朋友转述一遍。",
+              "当你不在身边的时候，他要么不断给你打电话发短信，要么忍着不给你打，但其实那是一种带着防御机制的等待。"
+            ]
+          },
+          {
+            title: "非常担心一点点小事就会摧毁你们的感情，坚信自己要非常努力才能博得你的欢心。",
+            examples: [
+              "经常说：“我今天给你打了好多电话，你会不会嫌我烦？”或者“今天在你家人面前，真是表现的太糟了，你家人一定不会喜欢我吧！”"
+            ]
+          },
+          {
+            title: "怀疑你对感情不忠。",
+            examples: [
+              "刺探到你的邮箱密码，去翻你的往来邮件。",
+              "非常留意你的行踪。",
+              "会从你的物品里寻找蛛丝马迹。"
+            ]
+          }
+        ]
+      }
+    ];
+
+    const form = document.querySelector("#quizForm");
+    const answeredCount = document.querySelector("#answeredCount");
+    const formStatus = document.querySelector("#formStatus");
+    const scoreList = document.querySelector("#scoreList");
+    const resultTitle = document.querySelector("#resultTitle");
+    const resultNote = document.querySelector("#resultNote");
+    const calculateButton = document.querySelector("#calculateButton");
+    const resetButton = document.querySelector("#resetButton");
+    const totalQuestions = SECTIONS.reduce((total, section) => total + section.items.length, 0);
+
+    function questionName(sectionId, itemIndex) {
+      return `${sectionId}-${itemIndex + 1}`;
+    }
+
+    function renderSections() {
+      form.innerHTML = SECTIONS.map((section) => {
+        const info = SECTION_INFO[section.id];
+        const items = section.items.map((item, itemIndex) => {
+          const qName = questionName(section.id, itemIndex);
+          const examples = item.examples.map((example) => `<li>${example}</li>`).join("");
+          const options = SCORE_LABELS.map((score) => {
+            const inputId = `${qName}-${score.value}`;
+            return `
+              <label class="option" for="${inputId}">
+                <input id="${inputId}" type="radio" name="${qName}" value="${score.value}">
+                <span>${score.label}</span>
+              </label>
+            `;
+          }).join("");
+
+          return `
+            <fieldset id="question-${qName}">
+              <legend>${itemIndex + 1}. ${item.title}</legend>
+              <ul class="examples">${examples}</ul>
+              <div class="options">${options}</div>
+            </fieldset>
+          `;
+        }).join("");
+
+        return `
+          <section class="section" data-section="${section.id}">
+            <div class="section-head">
+              <h2>${info.title}</h2>
+              <p>${info.description}</p>
+            </div>
+            ${items}
+          </section>
+        `;
+      }).join("");
+    }
+
+    function emptyScores() {
+      return SECTIONS.reduce((scores, section) => {
+        scores[section.id] = 0;
+        return scores;
+      }, {});
+    }
+
+    function getAnsweredTotal() {
+      return SECTIONS.reduce((total, section) => {
+        return total + section.items.filter((_, itemIndex) => {
+          return form.querySelector(`input[name="${questionName(section.id, itemIndex)}"]:checked`);
+        }).length;
+      }, 0);
+    }
+
+    function updateProgress() {
+      const answered = getAnsweredTotal();
+      const remaining = totalQuestions - answered;
+      answeredCount.textContent = `${answered} / ${totalQuestions}`;
+      formStatus.textContent = remaining === 0 ? "可以计算结果。" : `还有 ${remaining} 题未完成。`;
+    }
+
+    function calculateScores() {
+      return SECTIONS.reduce((scores, section) => {
+        scores[section.id] = section.items.reduce((sum, _, itemIndex) => {
+          const checked = form.querySelector(`input[name="${questionName(section.id, itemIndex)}"]:checked`);
+          return sum + (checked ? Number(checked.value) : 0);
+        }, 0);
+        return scores;
+      }, {});
+    }
+
+    function levelFor(score) {
+      if (score >= 23) {
+        return {
+          label: "很高",
+          detail: "显然属于这种依恋风格。"
+        };
+      }
+      if (score >= 18) {
+        return {
+          label: "中等",
+          detail: "有表现出这种依恋风格的倾向性。"
+        };
+      }
+      return {
+        label: "非常低",
+        detail: "显然不属于这种依恋风格。"
+      };
+    }
+
+    function describeScores(scores) {
+      const ranked = SECTIONS.map((section) => ({
+        id: section.id,
+        score: scores[section.id],
+        info: SECTION_INFO[section.id],
+        level: levelFor(scores[section.id])
+      })).sort((a, b) => b.score - a.score);
+
+      const high = ranked.filter((item) => item.score >= 23);
+      if (scores.anxious >= 23 && scores.avoidant >= 23) {
+        return {
+          title: "焦虑-回避型倾向明显",
+          note: "焦虑型和回避型得分都很高，可能呈现既渴望亲密又害怕亲密的混合风格。"
+        };
+      }
+      if (high.length > 0) {
+        return {
+          title: `${high.map((item) => item.info.shortTitle).join(" + ")}倾向很高`,
+          note: `最高项为 ${ranked[0].info.shortTitle} ${ranked[0].score} 分，${ranked[0].level.detail}`
+        };
+      }
+      if (ranked[0].score >= 18) {
+        return {
+          title: `${ranked[0].info.shortTitle}倾向中等`,
+          note: `最高项为 ${ranked[0].info.shortTitle} ${ranked[0].score} 分，说明对方有表现出这种风格的倾向性。`
+        };
+      }
+      return {
+        title: "三类倾向都不高",
+        note: "三部分得分都在 17 分以下，表格标准下不明显属于其中任一种风格。"
+      };
+    }
+
+    function renderScores(scores = emptyScores()) {
+      scoreList.innerHTML = SECTIONS.map((section) => {
+        const info = SECTION_INFO[section.id];
+        const score = scores[section.id] || 0;
+        const width = Math.round((score / 33) * 100);
+        const level = levelFor(score);
+        return `
+          <div class="score-row" data-type="${section.id}">
+            <div class="score-head">
+              <span>${info.key} ${info.shortTitle}</span>
+              <span>${score} / 33 · ${level.label}</span>
+            </div>
+            <div class="bar" aria-hidden="true"><span style="width:${width}%"></span></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function clearMissingMarks() {
+      form.querySelectorAll("fieldset.missing").forEach((fieldset) => {
+        fieldset.classList.remove("missing");
+      });
+    }
+
+    function missingQuestions() {
+      const missing = [];
+      SECTIONS.forEach((section) => {
+        section.items.forEach((_, itemIndex) => {
+          const name = questionName(section.id, itemIndex);
+          if (!form.querySelector(`input[name="${name}"]:checked`)) {
+            missing.push(name);
+          }
+        });
+      });
+      return missing;
+    }
+
+    function markMissing() {
+      clearMissingMarks();
+      const missing = missingQuestions();
+      missing.forEach((name) => {
+        document.querySelector(`#question-${name}`).classList.add("missing");
+      });
+      if (missing[0]) {
+        document.querySelector(`#question-${missing[0]}`).scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }
+      formStatus.textContent = `还有 ${missing.length} 题未完成。`;
+    }
+
+    function handleCalculate() {
+      if (getAnsweredTotal() < totalQuestions) {
+        markMissing();
+        updateProgress();
+        return;
+      }
+      clearMissingMarks();
+      const scores = calculateScores();
+      const result = describeScores(scores);
+      renderScores(scores);
+      resultTitle.textContent = result.title;
+      resultNote.textContent = result.note;
+      document.querySelector("#resultPanel").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    function handleReset() {
+      form.reset();
+      clearMissingMarks();
+      renderScores();
+      resultTitle.textContent = "尚未计算";
+      resultNote.textContent = "完成全部题目后显示三部分得分和判断。";
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    renderSections();
+    renderScores();
+    updateProgress();
+
+    form.addEventListener("change", updateProgress);
+    calculateButton.addEventListener("click", handleCalculate);
+    resetButton.addEventListener("click", handleReset);
+  </script>
+</body>
+</html>

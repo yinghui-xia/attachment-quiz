@@ -443,6 +443,1100 @@
     </div>
 
     <footer>
+      <p>题目文字由你提供。计分按豆瓣帖《分享一个依恋类型测试（附统计方法）》中的统计表执行：答案编号与 A/B/C/D 栏匹配时，该栏加 1 分。</p>
+    </footer>
+  </main>
+
+  <script>
+    const TYPE_INFO = {
+      stable: {
+        key: "A",
+        label: "安全型",
+        fullLabel: "A 安全型依恋得分",
+        description: "依恋焦虑和依恋回避都较低，关系中的信任感和恢复力相对稳定。"
+      },
+      anxious: {
+        key: "B",
+        label: "焦虑型",
+        fullLabel: "B 焦虑型依恋得分",
+        description: "依恋焦虑较强，对拒绝、分离和关系变化更敏感。"
+      },
+      avoidant: {
+        key: "C",
+        label: "回避型",
+        fullLabel: "C 回避型依恋得分",
+        description: "依恋回避较强，更重视独立和边界，亲密关系中过度靠近时可能想退开。"
+      },
+      unresolved: {
+        key: "D",
+        label: "未解决型",
+        fullLabel: "D 未解决型依恋得分",
+        description: "与养育者相关的伤害或矛盾感可能仍在影响当下关系。"
+      }
+    };
+
+    const QUESTIONS = [
+      {
+        id: 1,
+        text: "你是不是积极尝试新鲜事物、勇于前往陌生场所、结识新朋友的人？",
+        options: [
+          { label: "是", scores: { stable: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 2,
+        text: "无论对方是谁，你是否都能马上熟悉、放松心情与之相处？",
+        options: [
+          { label: "是", scores: { stable: 1 } },
+          { label: "否", scores: { avoidant: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 3,
+        text: "遇到麻烦时，你是否会乐观地认为“总会有办法解决”？",
+        options: [
+          { label: "是", scores: { stable: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 4,
+        text: "你是否打心底信任亲近的朋友或熟人？",
+        options: [
+          { label: "是", scores: { stable: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 5,
+        text: "你是否有容易指责他人、攻击性强的一面？",
+        options: [
+          { label: "是", scores: {} },
+          { label: "否", scores: { stable: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 6,
+        text: "初次尝试新事物时，你是否容易感到不安？",
+        options: [
+          { label: "是", scores: {} },
+          { label: "否", scores: { stable: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 7,
+        text: "你的父母（养育者）是否有时会对你非常冷淡？",
+        options: [
+          { label: "是", scores: { unresolved: 1 } },
+          { label: "否", scores: { stable: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 8,
+        text: "你是否认为人会在紧急时刻背叛或不可靠？",
+        options: [
+          { label: "是", scores: {} },
+          { label: "否", scores: { stable: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 9,
+        text: "你的父母（养育者）对你的批评是否比嘉许更多？",
+        options: [
+          { label: "是", scores: { unresolved: 1 } },
+          { label: "否", scores: { stable: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 10,
+        text: "回忆童年时代，开心的记忆是否比较多？",
+        options: [
+          { label: "是", scores: { stable: 1 } },
+          { label: "否", scores: { anxious: 1, unresolved: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 11,
+        text: "你是否非常感谢自己的父母（养育者）？",
+        options: [
+          { label: "是", scores: { stable: 1 } },
+          { label: "否", scores: { anxious: 1, unresolved: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 12,
+        text: "难过时，是否只要想起父母和家人，心情就能平静下来？",
+        options: [
+          { label: "是", scores: { stable: 1 } },
+          { label: "否", scores: { anxious: 1, unresolved: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 13,
+        text: "即使对方不在身边，你是否也能长久地惦记一个人，还是马上就会寻求他人陪伴？",
+        options: [
+          { label: "长久惦记一个人", scores: { stable: 1 } },
+          { label: "马上寻求他人陪伴", scores: { anxious: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 14,
+        text: "你是不是爱憎分明的人？",
+        options: [
+          { label: "是", scores: { anxious: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 15,
+        text: "你是否有过认为某人非常好，但最后却产生幻灭的感觉或开始讨厌对方的经历？",
+        options: [
+          { label: "是", scores: { anxious: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 16,
+        text: "你是否经常感觉烦躁或沮丧？",
+        options: [
+          { label: "是", scores: { anxious: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 17,
+        text: "你是否认为自己没有什么值得一提的优点？",
+        options: [
+          { label: "是", scores: { anxious: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 18,
+        text: "你是否曾因担心自己被拒绝而陷入焦虑？",
+        options: [
+          { label: "是", scores: { anxious: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 19,
+        text: "比起优点，你是否总是忍不住在意缺点？",
+        options: [
+          { label: "是", scores: { anxious: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 20,
+        text: "你是不是自信的人？",
+        options: [
+          { label: "是", scores: {} },
+          { label: "否", scores: { anxious: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 21,
+        text: "你是不是不依赖他人，能自行做出决定或采取行动的人？",
+        options: [
+          { label: "是", scores: {} },
+          { label: "否", scores: { anxious: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 22,
+        text: "你是否认为自己是没什么人爱的人？",
+        options: [
+          { label: "是", scores: { anxious: 1 } },
+          { label: "否", scores: { stable: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 23,
+        text: "遇到讨厌的事情，你是否会放在心上很久？",
+        options: [
+          { label: "是", scores: { anxious: 1 } },
+          { label: "否", scores: { stable: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 24,
+        text: "你的父母（养育者）是否经常做出伤害你的事？",
+        options: [
+          { label: "是", scores: { anxious: 1, unresolved: 1 } },
+          { label: "否", scores: { stable: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 25,
+        text: "你是否曾对父母（养育者）怀有愤怒或怨恨？",
+        options: [
+          { label: "是", scores: { anxious: 1, unresolved: 1 } },
+          { label: "否", scores: { stable: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 26,
+        text: "难过时，你是否会希望身边的人上前关心？",
+        options: [
+          { label: "是", scores: {} },
+          { label: "否", scores: { avoidant: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 27,
+        text: "亲近的人际关系对你而言是否重要？",
+        options: [
+          { label: "是", scores: {} },
+          { label: "否", scores: { avoidant: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 28,
+        text: "你是否总是冷漠无情？",
+        options: [
+          { label: "是", scores: { avoidant: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 29,
+        text: "你是否不喜欢过于亲昵的交友方式？",
+        options: [
+          { label: "是", scores: { avoidant: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 30,
+        text: "和曾经有过交情的人分开后，你是否马上就会忘记对方？",
+        options: [
+          { label: "是", scores: { avoidant: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 31,
+        text: "比起与人交往，你是否认为自己的世界更重要？",
+        options: [
+          { label: "是", scores: { avoidant: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 32,
+        text: "你是否认为只有自己的力量才可靠？",
+        options: [
+          { label: "是", scores: { avoidant: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 33,
+        text: "你是否不怎么怀念过去？",
+        options: [
+          { label: "是", scores: { avoidant: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 34,
+        text: "你是不是不轻易在脸上表现感情的人？",
+        options: [
+          { label: "是", scores: { avoidant: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 35,
+        text: "你是否认为即使是恋人或配偶也不能侵犯自己的隐私权？",
+        options: [
+          { label: "是", scores: { avoidant: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 36,
+        text: "你是否喜欢和亲密的人肌肤相亲、拥抱或发生肢体接触？",
+        options: [
+          { label: "是", scores: {} },
+          { label: "否", scores: { avoidant: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 37,
+        text: "你是否还清楚地记得幼年的事情？",
+        options: [
+          { label: "是", scores: {} },
+          { label: "否", scores: { avoidant: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 38,
+        text: "即使和关系亲近的人在一起，你是否也会客套？",
+        options: [
+          { label: "是", scores: { anxious: 1 } },
+          { label: "否", scores: { stable: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 39,
+        text: "你是否认为别人会在自己遇到困难时给予帮助？",
+        options: [
+          { label: "是", scores: { stable: 1 } },
+          { label: "否", scores: { avoidant: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 40,
+        text: "你是否会轻易接受他人的好意？",
+        options: [
+          { label: "是", scores: { stable: 1 } },
+          { label: "否", scores: { avoidant: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 41,
+        text: "你是否曾因害怕失败而逃避挑战？",
+        options: [
+          { label: "是", scores: { avoidant: 1 } },
+          { label: "否", scores: {} },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 42,
+        text: "与人分离时，你是否会感到非常悲伤或内心激动？",
+        options: [
+          { label: "是", scores: { anxious: 1 } },
+          { label: "否", scores: { avoidant: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 43,
+        text: "你是否不喜欢别人烦自己，希望自由自在地生活？",
+        options: [
+          { label: "是", scores: { avoidant: 1 } },
+          { label: "否", scores: { anxious: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 44,
+        text: "对你而言，工作和学业、恋爱和人际关系，哪一个更重要？",
+        options: [
+          { label: "工作和学业", scores: { avoidant: 1 } },
+          { label: "恋爱和人际关系", scores: { anxious: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      },
+      {
+        id: 45,
+        text: "受到伤害或感觉沮丧时，你是否认为别人的安慰非常重要？",
+        options: [
+          { label: "是", scores: {} },
+          { label: "否", scores: { avoidant: 1 } },
+          { label: "两者皆非", scores: {} }
+        ]
+      }
+    ];
+
+    const form = document.querySelector("#quizForm");
+    const answeredCount = document.querySelector("#answeredCount");
+    const formStatus = document.querySelector("#formStatus");
+    const scoreList = document.querySelector("#scoreList");
+    const resultTitle = document.querySelector("#resultTitle");
+    const resultNote = document.querySelector("#resultNote");
+    const calculateButton = document.querySelector("#calculateButton");
+    const resetButton = document.querySelector("#resetButton");
+
+    const scoreKeys = Object.keys(TYPE_INFO);
+    const maxScores = QUESTIONS.reduce((totals, question) => {
+      scoreKeys.forEach((key) => {
+        const best = Math.max(...question.options.map((option) => option.scores[key] || 0));
+        totals[key] = (totals[key] || 0) + best;
+      });
+      return totals;
+    }, {});
+
+    function renderQuestions() {
+      form.innerHTML = QUESTIONS.map((question) => {
+        const options = question.options.map((option, optionIndex) => {
+          const inputId = `q${question.id}-o${optionIndex + 1}`;
+          return `
+            <label class="option" for="${inputId}">
+              <input id="${inputId}" type="radio" name="q${question.id}" value="${optionIndex}">
+              <span>${optionIndex + 1}. ${option.label}</span>
+            </label>
+          `;
+        }).join("");
+
+        return `
+          <fieldset id="question-${question.id}">
+            <legend><span class="q-number">${question.id}</span><span>${question.text}</span></legend>
+            <div class="options">${options}</div>
+          </fieldset>
+        `;
+      }).join("");
+    }
+
+    function renderScores(scores = emptyScores()) {
+      scoreList.innerHTML = scoreKeys.map((key) => {
+        const info = TYPE_INFO[key];
+        const score = scores[key] || 0;
+        const max = maxScores[key] || 1;
+        const width = Math.round((score / max) * 100);
+        return `
+          <div class="score-row" data-type="${key}">
+            <div class="score-head">
+              <span>${info.fullLabel}</span>
+              <span>${score} / ${max}</span>
+            </div>
+            <div class="bar" aria-hidden="true"><span style="width:${width}%"></span></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function emptyScores() {
+      return scoreKeys.reduce((scores, key) => {
+        scores[key] = 0;
+        return scores;
+      }, {});
+    }
+
+    function getAnsweredTotal() {
+      return QUESTIONS.filter((question) => {
+        return form.querySelector(`input[name="q${question.id}"]:checked`);
+      }).length;
+    }
+
+    function updateProgress() {
+      const total = getAnsweredTotal();
+      const remaining = QUESTIONS.length - total;
+      answeredCount.textContent = `${total} / ${QUESTIONS.length}`;
+      formStatus.textContent = remaining === 0 ? "可以计算结果。" : `还有 ${remaining} 题未完成。`;
+    }
+
+    function calculateScores() {
+      const scores = emptyScores();
+      QUESTIONS.forEach((question) => {
+        const checked = form.querySelector(`input[name="q${question.id}"]:checked`);
+        if (!checked) {
+          return;
+        }
+        const option = question.options[Number(checked.value)];
+        Object.entries(option.scores).forEach(([key, points]) => {
+          scores[key] += points;
+        });
+      });
+      return scores;
+    }
+
+    function strengthText(score, typeKey) {
+      if (typeKey === "unresolved") {
+        if (score >= 10) return "非常明显";
+        if (score >= 5) return "值得留意";
+        return "不明显";
+      }
+      if (score >= 15) return "非常强";
+      if (score >= 10) return "较强";
+      if (score >= 5) return "有一定倾向";
+      return "不明显";
+    }
+
+    function describeResult(scores) {
+      const relational = ["stable", "anxious", "avoidant"]
+        .map((key) => ({ key, score: scores[key] }))
+        .sort((a, b) => b.score - a.score);
+      const [first, second] = relational;
+      const unresolvedScore = scores.unresolved;
+
+      if (first.score === 0 && unresolvedScore === 0) {
+        return {
+          title: "暂无明显倾向",
+          note: "你选择了较多中间答案，四类分数都没有形成明显差异。"
+        };
+      }
+
+      let title;
+      let note;
+
+      if (
+        scores.anxious >= 10 &&
+        scores.avoidant >= 10 &&
+        Math.min(scores.anxious, scores.avoidant) - scores.stable >= 5
+      ) {
+        title = "恐惧-回避型倾向";
+        note = "不安型和回避型分数同时较高，关系中可能既渴望靠近，又担心受伤。";
+      } else if (first.score - second.score >= 5) {
+        title = `${TYPE_INFO[first.key].label}倾向`;
+        note = TYPE_INFO[first.key].description;
+      } else {
+        title = `${TYPE_INFO[first.key].label} + ${TYPE_INFO[second.key].label}混合倾向`;
+        note = `最高两项分数接近，可以同时参考 ${TYPE_INFO[first.key].label} 和 ${TYPE_INFO[second.key].label} 的说明。`;
+      }
+
+      const mainStrength = strengthText(first.score, first.key);
+      note += ` 主倾向强度：${mainStrength}。`;
+
+      if (unresolvedScore >= 5) {
+        note += ` D 未解决型分数为 ${unresolvedScore}，${strengthText(unresolvedScore, "unresolved")}，建议与主倾向一起看。`;
+      }
+
+      return { title, note };
+    }
+
+    function clearMissingMarks() {
+      form.querySelectorAll("fieldset.missing").forEach((fieldset) => {
+        fieldset.classList.remove("missing");
+      });
+    }
+
+    function markMissing() {
+      clearMissingMarks();
+      const missing = QUESTIONS.filter((question) => {
+        return !form.querySelector(`input[name="q${question.id}"]:checked`);
+      });
+      missing.forEach((question) => {
+        document.querySelector(`#question-${question.id}`).classList.add("missing");
+      });
+      if (missing[0]) {
+        document.querySelector(`#question-${missing[0].id}`).scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }
+      formStatus.textContent = `还有 ${missing.length} 题未完成。`;
+    }
+
+    function handleCalculate() {
+      const total = getAnsweredTotal();
+      if (total < QUESTIONS.length) {
+        markMissing();
+        updateProgress();
+        return;
+      }
+
+      clearMissingMarks();
+      const scores = calculateScores();
+      const result = describeResult(scores);
+      renderScores(scores);
+      resultTitle.textContent = result.title;
+      resultNote.textContent = result.note;
+      document.querySelector("#resultPanel").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    function handleReset() {
+      form.reset();
+      clearMissingMarks();
+      renderScores();
+      resultTitle.textContent = "尚未计算";
+      resultNote.textContent = "完成全部题目后显示分数和倾向。";
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    renderQuestions();
+    renderScores();
+    updateProgress();
+
+    form.addEventListener("change", updateProgress);
+    calculateButton.addEventListener("click", handleCalculate);
+    resetButton.addEventListener("click", handleReset);
+  </script>
+</body>
+</html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>依恋类型自测</title>
+  <meta name="description" content="一个可部署到 GitHub Pages 的单页依恋类型自测。">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --surface-2: #eef4f4;
+      --text: #1f2933;
+      --muted: #60707d;
+      --line: #d9e1e7;
+      --stable: #2f7d67;
+      --anxious: #b95454;
+      --avoidant: #34699a;
+      --unresolved: #9a6a2f;
+      --accent: #234f5f;
+      --focus: #d79645;
+      --shadow: 0 18px 45px rgba(30, 46, 58, 0.08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(238, 244, 244, 0.85), rgba(246, 248, 251, 0.4) 330px),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+      padding: 22px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 3rem;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .intro {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .counter {
+      min-width: 170px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .counter strong {
+      display: block;
+      font-size: 1.55rem;
+      line-height: 1.15;
+      color: var(--accent);
+    }
+
+    .counter span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .notice {
+      margin: 22px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--focus);
+      background: #fffaf2;
+      color: #5b4a33;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    fieldset {
+      margin: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: 0 8px 24px rgba(30, 46, 58, 0.05);
+    }
+
+    fieldset.missing {
+      border-color: #d79645;
+      box-shadow: 0 0 0 3px rgba(215, 150, 69, 0.16);
+    }
+
+    legend {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 100%;
+      margin: 0 0 14px;
+      padding: 0;
+      color: var(--text);
+      font-size: 1.02rem;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .q-number {
+      flex: 0 0 auto;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 42px;
+      height: 28px;
+      padding: 0 8px;
+      background: var(--surface-2);
+      color: var(--accent);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .option {
+      position: relative;
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      min-height: 48px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      background: #fbfcfd;
+      cursor: pointer;
+      transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+    }
+
+    .option:hover {
+      border-color: #9fb3bf;
+      background: #f4f8fa;
+    }
+
+    .option input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
+    .option span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      font-size: 0.96rem;
+    }
+
+    .option:has(input:checked) {
+      border-color: var(--accent);
+      background: #edf6f6;
+      transform: translateY(-1px);
+    }
+
+    .actions {
+      position: sticky;
+      bottom: 0;
+      z-index: 3;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+
+    button {
+      border: 0;
+      padding: 12px 18px;
+      background: var(--accent);
+      color: #ffffff;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--accent);
+    }
+
+    button:hover {
+      filter: brightness(1.05);
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid rgba(215, 150, 69, 0.55);
+      outline-offset: 2px;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    aside {
+      position: sticky;
+      top: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 16px 18px 0;
+      font-size: 1.2rem;
+      letter-spacing: 0;
+    }
+
+    .result-summary {
+      padding: 12px 18px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .result-title {
+      margin: 0 0 6px;
+      font-size: 1.45rem;
+      line-height: 1.25;
+      color: var(--accent);
+      font-weight: 850;
+    }
+
+    .result-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .score-list {
+      display: grid;
+      gap: 14px;
+      padding: 16px 18px 18px;
+    }
+
+    .score-row {
+      display: grid;
+      gap: 7px;
+    }
+
+    .score-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--text);
+      font-weight: 750;
+      font-size: 0.94rem;
+    }
+
+    .bar {
+      height: 10px;
+      overflow: hidden;
+      background: #edf1f4;
+    }
+
+    .bar span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 220ms ease;
+    }
+
+    .score-row[data-type="stable"] .bar span {
+      background: var(--stable);
+    }
+
+    .score-row[data-type="anxious"] .bar span {
+      background: var(--anxious);
+    }
+
+    .score-row[data-type="avoidant"] .bar span {
+      background: var(--avoidant);
+    }
+
+    .score-row[data-type="unresolved"] .bar span {
+      background: var(--unresolved);
+    }
+
+    .rule-list {
+      margin: 0;
+      padding: 0 18px 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      list-style: none;
+    }
+
+    .rule-list li + li {
+      margin-top: 8px;
+    }
+
+    footer {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 920px) {
+      header,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .counter,
+      aside {
+        position: static;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .page {
+        width: min(100% - 20px, 1120px);
+        padding-top: 10px;
+      }
+
+      h1 {
+        font-size: 2.1rem;
+      }
+
+      header {
+        padding-top: 14px;
+      }
+
+      .options {
+        grid-template-columns: 1fr;
+      }
+
+      fieldset {
+        padding: 15px;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <h1>依恋类型自测</h1>
+        <p class="intro">45 道单选题，答完后会在本页计算 A 安定型、B 不安型、C 回避型、D 未解决型四类分数。</p>
+      </div>
+      <div class="counter" aria-live="polite">
+        <strong id="answeredCount">0 / 45</strong>
+        <span>已完成</span>
+      </div>
+    </header>
+
+    <p class="notice">本测试仅适合作为自我理解的线索，不等同于心理诊断。若结果让你明显不安，或现实关系中已有持续困扰，请优先寻求可信赖的专业支持。</p>
+
+    <div class="layout">
+      <form id="quizForm" novalidate></form>
+
+      <aside aria-label="测试结果">
+        <section class="panel" id="resultPanel">
+          <h2>结果</h2>
+          <div class="result-summary">
+            <p class="result-title" id="resultTitle">尚未计算</p>
+            <p class="result-note" id="resultNote">完成全部题目后显示分数和倾向。</p>
+          </div>
+          <div class="score-list" id="scoreList"></div>
+        </section>
+        <section class="panel">
+          <h2>判定参考</h2>
+          <ul class="rule-list">
+            <li>10 分以上表示该倾向较强，15 分以上表示该倾向非常强。</li>
+            <li>D 未解决型 5 分以上就值得留意，通常会与其他类型并存。</li>
+            <li>最高分与第二高分差距不足 5 分时，更适合看作混合倾向。</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+
+    <div class="actions">
+      <span class="status" id="formStatus">还有 45 题未完成。</span>
+      <div>
+        <button type="button" class="secondary" id="resetButton">重置</button>
+        <button type="button" id="calculateButton">计算结果</button>
+      </div>
+    </div>
+
+    <footer>
       <p>题目文字由你提供。计分结构参考 MIT 许可开源项目 <a href="https://github.com/paithiov909/attachmentstyletest" target="_blank" rel="noopener">paithiov909/attachmentstyletest</a>，其页面说明来源为冈田尊司《回避性爱着障碍》。</p>
     </footer>
   </main>

@@ -1,29 +1,17 @@
-# Third Party Notices
+# Source Notes
 
-This project references the scoring structure from:
+The questionnaire text was provided by the user.
 
-- `paithiov909/attachmentstyletest`
-- Repository: https://github.com/paithiov909/attachmentstyletest
-- License: MIT
+The browser-side scoring follows the answer-number counting method described in this Douban topic:
 
-## MIT License
+- Title: 分享一个依恋类型测试（附统计方法）
+- URL: https://www.douban.com/group/topic/490193528/
 
-Copyright (c) 2019-2021 愛着スタイル診断テスト
+Scoring summary:
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+- For each question, compare the selected answer number with the A/B/C/D scoring table.
+- If the selected answer number appears in a column, add 1 point to that column.
+- One answer can add points to more than one column.
+- "两者皆非" adds 0 points.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+This page is for self-understanding only and is not a psychological diagnosis.
